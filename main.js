@@ -291,7 +291,7 @@ const loop = () => {
 
 	const now = performance.now();
 
-	if (currentMidiPitch === midiNoteSet[currentPointerX] && now - prevTime > 1000) {
+	if (currentMidiPitch === midiNoteSet[currentPointerX] && now - prevTime > 500) {
 		currentPointerX++;
 
 		prevTime = now;
