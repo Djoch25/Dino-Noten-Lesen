@@ -1,3 +1,4 @@
+/*
 const getImage = (path) => {
 	const img = new Image();
 	img.src = path;
@@ -50,3 +51,4 @@ const addBackgroundToCanvas = (ts, cnv, size) => {
 const freeTileSet = getTileSet("freetileset", ["BG", "1", "2", "3", "4", "5", "6", "12", "9", "16", "13", "14", "15", "18", "17"]);
 const desertTileSet = getTileSet("deserttileset", ["BG", "1", "2", "3", "4", "5", "6", "12", "9", "16", "13", "14", "15", "18", "17"]);
 const winterTileSet = getTileSet("wintertileset", ["BG", "1", "2", "3", "4", "5", "6", "12", "9", "16", "13", "14", "15", "18", "17"]);
+*/
