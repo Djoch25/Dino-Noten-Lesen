@@ -2,13 +2,13 @@ class PitchProcessor extends AudioWorkletProcessor {
 	constructor() {
 		super();
 
-		this.bufferSize = 4096;
+		this.bufferSize = 2048;
 		this.buffer = new Float32Array(this.bufferSize);
 		this.index = 0;
 
 		this.midiPitch = -1;
         this.midiPitchLikelihood = 0;
-        this.maxLikelihood = 1;
+        this.maxLikelihood = 2;
 	}
 
 	process(inputs) {
