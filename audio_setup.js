@@ -11,6 +11,10 @@ const startMic = async () => {
 
   workletNode.port.onmessage = (event) => {
     currentMidiPitch = event.data;
+
+    if (currentMidiPitch === midiNoteSet[currentPointerX]) {
+      currentPointerX++;
+    }
   };
 
   source = audioContext.createMediaStreamSource(stream);
