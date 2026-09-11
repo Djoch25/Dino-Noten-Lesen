@@ -243,8 +243,8 @@ const diatonicMidiToNotes = (midis) => {
 // CANVAS DI BACKGROUND (PENTAGRAMMA) //
 //====================================//
 
-const createScore = (cnv, fontSize) => {
-	const score = new Score(cnv, fontSize);
+const createScore = (cnv, fontSize, noteSpacing) => {
+	const score = new Score(cnv, fontSize, noteSpacing);
 
 	score.addStave().setStaveDim(50, 50, 1200);
 	score.addClef("treble").setXClef(20);
