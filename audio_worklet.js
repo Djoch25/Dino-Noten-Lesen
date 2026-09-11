@@ -3,12 +3,20 @@ class PitchProcessor extends AudioWorkletProcessor {
 		super();
 
 		this.bufferSize = 2048;
+        this.hopSize = 512;
+
 		this.buffer = new Float32Array(this.bufferSize);
 		this.index = 0;
 
-		this.midiPitch = -1;
-        this.midiPitchLikelihood = 0;
-        this.maxLikelihood = 2;
+        this.pitchConfidence = 0.8;
+
+        this.minLag = Math.floor(sampleRate / 550);
+        this.maxLag = Math.ceil(sampleRate / 250);
+
+        this.detectionAvailable = true;
+
+        this.releaseCount = 0;
+        this.releaseThreshold = 3;
 	}
 
 	process(inputs) {
@@ -20,36 +28,47 @@ class PitchProcessor extends AudioWorkletProcessor {
 
 		for (let sample of inputSamples) {
 			this.buffer[this.index++] = sample;
-		}
 
-		if (this.index >= this.bufferSize) {
-			const frequency = yin(this.buffer, sampleRate, 1000, 0.1);
-			const midiPitch = Math.floor(12 * Math.log2(frequency / 440)) + 69;
-
-            if (midiPitch === this.midiPitch) {
-                this.midiPitchLikelihood++;
-
-                if (this.midiPitchLikelihood >= this.maxLikelihood) {
-                    this.midiPitchLikelihood = 0;
-
-                    this.port.postMessage(this.midiPitch);
-                }
-            } else {
-                this.midiPitchLikelihood = 0;
+            if (this.index >= this.bufferSize) {
+                this.sendPitch();
+                this.buffer.copyWithin(0, this.hopSize, this.bufferSize);
+                this.index = this.bufferSize - this.hopSize;
             }
-
-            this.midiPitch = midiPitch;
-
-			this.index = 0;
 		}
 
 		return true;
 	}
+
+    sendPitch() {
+        const yinDetected = yin(this.buffer, sampleRate, this.maxLag, this.minLag, 0.15); //finestra 250 - 550 Hz
+        const frequency = yinDetected.frequency;
+        const confidence = yinDetected.confidence;
+
+        if (frequency <= 0 || confidence < this.pitchConfidence) {
+            this.releaseCount++;
+
+            if (this.releaseCount >= this.releaseThreshold) {
+                this.detectionAvailable = true;
+            }   
+
+            return;
+        }
+
+        this.releaseCount = 0;
+
+        if (this.detectionAvailable) {
+            const midiPitch = Math.round(12 * Math.log2(frequency / 440)) + 69;
+        
+            this.port.postMessage(midiPitch);
+
+            this.detectionAvailable = false;
+        }
+    }
 }
 
 registerProcessor("audio_worklet", PitchProcessor);
 
-const yin = (buffer, sampleRate, maxLag, threshold = 0.1) => {
+const yin = (buffer, sampleRate, maxLag, minLag, threshold = 0.1) => {
 	const len = buffer.length;
 
     // 1. Difference Function
@@ -75,22 +94,17 @@ const yin = (buffer, sampleRate, maxLag, threshold = 0.1) => {
     for (let tau = 1; tau <= maxLag; tau++) {
         runningSum += df[tau];
 
-        cmndf[tau] = runningSum === 0
-            ? 1
-            : (df[tau] * tau) / runningSum;
+        cmndf[tau] = runningSum === 0 ? 1 : (df[tau] * (tau)) / runningSum;
     }
 
     // 3. Absolute threshold
     let tau = -1;
 
-    for (let i = 2; i <= maxLag; i++) {
+    for (let i = minLag; i <= maxLag; i++) {
         if (cmndf[i] < threshold) {
 
             // cerca il minimo locale
-            while (
-                i + 1 <= maxLag &&
-                cmndf[i + 1] < cmndf[i]
-            ) {
+            while (i + 1 <= maxLag && cmndf[i + 1] < cmndf[i]) {
                 i++;
             }
 
@@ -99,7 +113,12 @@ const yin = (buffer, sampleRate, maxLag, threshold = 0.1) => {
         }
     }
 
-    if (tau === -1) return -1;
+    if (tau === -1) {
+        return {
+            frequency: -1,
+            confidence: 0
+        }
+    }
 
     // 4. Interpolazione parabolica
     let betterTau = tau;
@@ -117,5 +136,8 @@ const yin = (buffer, sampleRate, maxLag, threshold = 0.1) => {
     }
 
     // 5. Frequenza fondamentale
-    return sampleRate / betterTau;
+    return {
+        frequency: sampleRate / betterTau,
+        confidence: 1 - cmndf[tau]
+    }
 }
