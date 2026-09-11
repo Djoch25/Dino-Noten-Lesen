@@ -283,25 +283,19 @@ const pointCnv = createCanvas();
 const pointCtx = setupCanvas(pointCnv, 0, 0, WIDTH, HEIGHT, document.body)
 
 let currentPointerX = 0;
-let prevTime = performance.now();
 
 let ID;
 const loop = () => {
 	ID = requestAnimationFrame(loop);
 
-	const now = performance.now();
-
-	if (currentMidiPitch === midiNoteSet[currentPointerX] && now - prevTime > 500) {
-		currentPointerX++;
-
-		prevTime = now;
-	}
-
 	const x = noteXs[currentPointerX];
 
-	pointCtx.clearRect(0, 0, 1000, 220);
+	pointCtx.clearRect(0, 0, 1000, 500);
 	pointCtx.fillStyle = "#ff0000";
 	pointCtx.fillRect(x - 10, 200, 20, 20);
+
+	pointCtx.font = "40px Arial";
+	pointCtx.fillText(currentMidiPitch, 100, 300);
 }
 
 //========================//
@@ -326,7 +320,7 @@ document.addEventListener("pointerdown", () => {
 
 	document.body.requestFullscreen();
 
-	const score = createScore(scoreCnv, SCORE_FONT_SIZE);
+	const score = createScore(scoreCnv, SCORE_FONT_SIZE, 1.3);
 	noteXs = score.getNotesAbsoluteCoordinates();
 	midiNoteSet = score.getMidiSet();
 
