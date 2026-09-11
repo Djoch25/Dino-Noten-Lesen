@@ -1,7 +1,7 @@
 const FONTSIZE = 60;
 
 class Score {
-	constructor(cnv, fontSize = 40) {
+	constructor(cnv, fontSize = 40, noteSpacing = 1.6) {
 		//coordinate della canvas
 		this.x = parseInt(cnv.style.left);
 		this.y = parseInt(cnv.style.top);
@@ -27,7 +27,7 @@ class Score {
 
 		//note
 		this.notes = [];
-		this.noteSpacing = this.fontSize * 1.6;
+		this.noteSpacing = this.fontSize * noteSpacing;
 		this.noteXoffset = this.fontSize * 1.25;
 
 		//canvas grafica
