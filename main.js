@@ -203,6 +203,7 @@ document.addEventListener("pointerdown", async () => {
 	if (document.fullscreen || gameIsRunning) return;
 
 	document.body.requestFullscreen();
+	consoleError(document.fullscreen);
 
 	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
