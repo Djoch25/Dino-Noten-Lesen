@@ -201,9 +201,9 @@ let micStarted = false;
 document.addEventListener("pointerdown", async () => {
 	if (document.fullscreen || gameIsRunning) return;
 
-	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
-
 	document.body.requestFullscreen();
+
+	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
 	addBackgroundToCanvas(tileSets[LEVEL], scoreCnv, TILE_SIZE);
 
