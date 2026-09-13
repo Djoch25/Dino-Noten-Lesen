@@ -167,7 +167,6 @@ const loop = () => {
 	}
 
 	if (punteggio > 29) {
-		punteggio = 0;
 		punteggioParziale = 0;
 		time = TOTAL_TIME;
 		animeCtx.clearRect(0, 0, WIDTH, HEIGHT);
