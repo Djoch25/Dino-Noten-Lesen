@@ -198,12 +198,12 @@ startMic().then(async() => {
 
 let micStarted = false;
 
-document.addEventListener("pointerdown", async () => {
+document.addEventListener("click", async () => {
 	if (document.fullscreen || gameIsRunning) return;
 
 	document.body.requestFullscreen()
         .then(() => {
-            consoleError("Fullscreen OK");
+            consoleError(window.devicePixelRatio);
         })
         .catch((err) => {
             console.error("Fullscreen rejected:", err);
