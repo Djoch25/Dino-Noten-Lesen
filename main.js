@@ -1,4 +1,5 @@
 const levels = [];
+const levelColors = ["#00ff00", "#ffff00", "#ffffff"];
 
 levels[0] = {
 	level: 0,
@@ -98,6 +99,7 @@ const scoreCtx = setupCanvas(scoreCnv, 0, 0, WIDTH, HEIGHT, document.body);
 
 let noteXs;
 let midiNoteSet;
+let midiTargetIndex = 0;
 
 //======================//
 // CANVAS DI ANIMAZIONE //
@@ -123,8 +125,6 @@ const animeCnv = createCanvas();
 const animeCtx = setupCanvas(animeCnv, 0, 0, WIDTH, HEIGHT, document.body)
 animeCtx.font = SCORE_FONT_SIZE + "px bold Arial";
 
-let pitchListener = "click";
-
 let gameIsRunning = false;
 
 let dino;
@@ -133,7 +133,8 @@ let time = TOTAL_TIME;
 let timeFromLastFrame = 0;
 let prevFrameTime = 0;
 
-let punteggio = 0;
+let punteggioTotale = 0;
+let punteggioLivello = 0;
 let punteggioParziale = 0;
 
 let ID;
@@ -154,9 +155,13 @@ const loop = () => {
 		dino.toDeath();
 	}
 
+	if (LEVEL < 2 && currentMidiPitch === midiNoteSet[midiTargetIndex]) {
+		dino.jump(RELATIVE_NOTE_SPACING);
+	}
+
 	dino.update(ID);
 
-	if (punteggioParziale > 7) {
+	if (punteggioParziale >= 8) {
 		punteggioParziale = 0;
 		animeCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
@@ -164,9 +169,13 @@ const loop = () => {
 		setupScore(levels[LEVEL]);
 		
 		dino.respawn();
+
+		midiTargetIndex = 0;
+		midiNoteSet = scores[0].getMidiSet();
 	}
 
-	if (punteggio > 29) {
+	if (punteggioLivello >= 32) {
+		punteggioLivello = 0;
 		punteggioParziale = 0;
 		time = TOTAL_TIME;
 		animeCtx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -192,26 +201,15 @@ const loop = () => {
 		animeCtx.fillRect(x, y + h, w, barLifeHeight);
 	}
 
-	const punteggioDim = animeCtx.measureText(punteggio);
+	const punteggioDim = animeCtx.measureText(punteggioTotale);
 	const punteggioW2 = punteggioDim.width / 2;
 	const punteggioH2 = SCORE_FONT_SIZE / 2;
 
-	animeCtx.fillText(punteggio, TILE_SIZE * 5.5 - punteggioW2, TILE_SIZE * 0.5 + punteggioH2);
+	animeCtx.fillStyle = levelColors[LEVEL];
+	animeCtx.fillText(punteggioTotale, TILE_SIZE * 5.5 - punteggioW2, TILE_SIZE * 0.5 + punteggioH2);
 
 	dino.draw();
 }
-
-//========================//
-// PARTENZA DEL MICROFONO //
-//========================//
-
-/*
-startMic().then(async() => {
-	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
-
-	micStarted = true;
-});
-*/
 
 //=========================//
 // SETUP GAME E FULLSCREEN //
@@ -222,15 +220,7 @@ let micStarted = false;
 document.addEventListener("click", async () => {
 	if (document.fullscreen || gameIsRunning) return;
 
-	document.body.requestFullscreen()
-    /*   .then(() => {
-            consoleError(window.devicePixelRatio);
-        })
-        .catch((err) => {
-            console.error("Fullscreen rejected:", err);
-            consoleError(String(err));
-        });
-	*/
+	document.body.requestFullscreen();
 
 	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
@@ -238,13 +228,8 @@ document.addEventListener("click", async () => {
 
 	setupScore(levels[LEVEL]);
 
-	dino = new Dino(noteXs[0] - DINO_IMAGE_WIDTH, TILE_SIZE * 5 - DINO_IMAGE_HEIGHT * 3, 3, animeCnv);
+	dino = new Dino(noteXs[0] - DINO_IMAGE_WIDTH, TILE_SIZE * (5 + TILE_Y_OFFSET) - DINO_IMAGE_HEIGHT * 3, 3, animeCnv);
 
-	
-	//for (let score of scores) score.draw();
-	
-	//if (connector) connector.draw();
-	
 	dino.respawn();
 	
 	loop();
@@ -256,6 +241,8 @@ document.addEventListener("click", async () => {
 // CREAZIONE SCORE //
 //=================//
 
+const scores = [];
+
 const setupScore = (level) => {
 	const staveNum = level.staves;
 	const bgScreenCenterX = TILE_SIZE * 5.5;
@@ -265,11 +252,10 @@ const setupScore = (level) => {
 	const staveHeight = SCORE_FONT_SIZE;
 	const staveDistance = staveNum === 1 ? 0 : staveHeight * 2;
 	const systemHeight = staveDistance + staveHeight;
-	const bgScreenCenterY = TILE_SIZE * 2.5;
+	const bgScreenCenterY = TILE_SIZE * (2.5 + TILE_Y_OFFSET);
 	const y = bgScreenCenterY - systemHeight * 0.5;
 	
 	const scoreOptions = [];
-	const scores = [];
 	let connector;
 
 	const {notes1, notes2} = getNoteSet(levels[LEVEL].level);
@@ -309,7 +295,6 @@ const setupScore = (level) => {
 
 	for (const score of scores) score.draw();
 	if (connector) connector.draw();
-	//return {scores: scores, connector: connector};
 }
 
 //=================//
@@ -317,7 +302,14 @@ const setupScore = (level) => {
 //=================//
 
 document.addEventListener("pointerdown", () => {
-	if (pitchListener !== "click" || !gameIsRunning) return;
+	if (!gameIsRunning) return;
 
 	dino.jump(RELATIVE_NOTE_SPACING);
 });
+
+//========================//
+// PARTENZA DEL MICROFONO //
+//========================//
+
+startMic();
+
