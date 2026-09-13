@@ -8,8 +8,8 @@ const setupCanvas = (_cnv, _x, _y, _w, _h, _wrapper) => {
 	_cnv.style.position = "absolute";
 	_cnv.style.left = _x + "px";
 	_cnv.style.top = _y + "px";
-	//_cnv.style.width = screen.width + "px";
-	//_cnv.style.height = screen.height + "px";
+	_cnv.style.width = screen.width + "px";
+	_cnv.style.height = screen.height + "px";
 
 	if (_wrapper) _wrapper.appendChild(_cnv); 
 
