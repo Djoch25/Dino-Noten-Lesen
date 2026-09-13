@@ -199,15 +199,14 @@ startMic().then(async() => {
 let micStarted = false;
 
 document.addEventListener("pointerdown", async () => {
-	try {
 	if (document.fullscreen || gameIsRunning) return;
 
 	await document.body.requestFullscreen();
 	consoleError(document.fullscreen);
 
-	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
+	/*await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
-	addBackgroundToCanvas(tileSets[LEVEL], scoreCnv, TILE_SIZE);
+	//addBackgroundToCanvas(tileSets[LEVEL], scoreCnv, TILE_SIZE);
 
 	const bgScreenCenterX = TILE_SIZE * 5.5;
 	const staveWidth = WIDTH * 0.7;
@@ -263,16 +262,13 @@ document.addEventListener("pointerdown", async () => {
 	dino = new Dino(noteXs[0] - DINO_IMAGE_WIDTH, HEIGHT * 0.6, 3, animeCnv);
 
 	setTimeout(() => {
-		for (let score of scores) score.draw();
-		if (connector) connector.draw();
+		//for (let score of scores) score.draw();
+		//if (connector) connector.draw();
 		dino.respawn();
-		loop();
+		//loop();
 		gameIsRunning = true;
 	}, 500);
-
-	} catch(err) {
-		consoleError(err);
-	}
+	*/
 });
 
 //=================//
