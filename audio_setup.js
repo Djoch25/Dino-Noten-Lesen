@@ -10,10 +10,12 @@ const startMic = async () => {
   const workletNode = new AudioWorkletNode(audioContext, "audio_worklet");
 
   workletNode.port.onmessage = (event) => {
-    currentMidiPitch = event.data;
+    const {frequency, confidence} = event.data;
 
-    if (currentMidiPitch === midiNoteSet[currentPointerX]) {
-      currentPointerX++;
+    if (confidence > 0.8) {
+      currentMidiPitch = Math.round(12 * Math.log2(frequency / 440)) + 69;
+    } else {
+      currentMidiPitch = -1;
     }
   };
 
