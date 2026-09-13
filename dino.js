@@ -1,5 +1,6 @@
 const DINO_IMAGE_WIDTH = 68;
 const DINO_IMAGE_HEIGHT = 47;
+const DINO_IMAGE_ELEVATION = 15;
 const DINO_SPRINT_JUMP_SPEED = -13;
 const DINO_GRAVITY = 1;
 
@@ -12,7 +13,7 @@ class BasicDino {
 		this.x = x;
 		this.initX = this.x;
 		this.y = y;
-		this.groundY = this.y; //posizione originale prima del salto
+		this.groundY = this.y + DINO_IMAGE_ELEVATION; //posizione originale prima del salto
 		this.w = DINO_IMAGE_WIDTH * dim;
 		this.h = DINO_IMAGE_HEIGHT * dim;
 
@@ -180,6 +181,8 @@ class Dino extends BasicDino {
 	}
 
 	draw() {
+		this.ctx.fillStyle = "#ff000077";
+		//this.ctx.fillRect(this.x, this.y, this.w, this.h);
 		this.ctx.drawImage(this.dinoImgs[this.imgI], this.x, this.y, this.w, this.h);
 	}
 }
