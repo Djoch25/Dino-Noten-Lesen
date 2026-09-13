@@ -121,7 +121,7 @@ class Dino extends BasicDino {
 
 		let timeId = 0;
 
-		while(y <= this.groundY || velY < 0) {
+		while(y <= this.y || velY < 0) {
 			y += velY;
 			velY += accY;
 
@@ -143,6 +143,7 @@ class Dino extends BasicDino {
 		this.velX = distance / this.framePerJump;
 
 		punteggio++;
+		punteggioParziale++;
 	}
 
 	update(id) {
