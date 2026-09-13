@@ -266,13 +266,13 @@ document.addEventListener("click", async () => {
 	//scoreCtx.fillStyle = "#ffffff";
 	//scoreCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
-	dino = new Dino(noteXs[0] - DINO_IMAGE_WIDTH, HEIGHT * 0.6, 3, animeCnv);
+	dino = new Dino(noteXs[0] - DINO_IMAGE_WIDTH, TILE_SIZE * 5 - DINO_IMAGE_HEIGHT * 3, 3, animeCnv);
 
 	setTimeout(() => {
 		for (let score of scores) score.draw();
 		if (connector) connector.draw();
 		dino.respawn();
-		//loop();
+		loop();
 		gameIsRunning = true;
 	}, 500);
 });
