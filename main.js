@@ -1,335 +1,280 @@
 const levels = [];
-const handPositionColors = ["#00ff0077", "#ff000077", "#0000ff77", "#ffff0077"];
 
 levels[0] = {
-	noteSet: ["c4", "d4", "e4", "f4", "g4"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["c4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 1
+	level: 0,
+	staves: 1,
+	clef: ["treble"],
+	notes: null
 };
 
 levels[1] = {
-	noteSet: ["c4", "d4", "e4", "f4", "g4"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["c4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 2
+	level: 1,
+	staves: 1,
+	clef: ["bass"],
+	notes: null
 };
 
 levels[2] = {
-	noteSet: ["c4", "d4", "e4", "f4", "g4"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["c4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 4
+	level: 2,
+	staves: 2,
+	clef: ["treble", "bass"],
+	notes: null
 };
 
-levels[3] = {
-	noteSet: ["d4", "e4", "f4", "g4", "a4"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["d4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 2
-};
+const getNoteSet = (level) => {
+	const notePool = ["c", "d", "e", "f", "g", "a", "b", "c"];
+	const consonances = [2, 4, 5, 9, 11, 12, 14];
 
-levels[4] = {
-	noteSet: ["d4", "e4", "f4", "g4", "a4"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["d4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 4
-};
+	const noteIndex1 = [];
+	const noteIndex2 = [];
 
-levels[5] = {
-	noteSet: ["c4", "d4", "e4", "f4", "g4", "a4"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["c4", "d4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 5
-};
+	for (let i = 0; i < 8; i++) {
+		//range 0 - 7
+		noteIndex1[i] = Math.floor(Math.random() * notePool.length);
 
-levels[6] = {
-	noteSet: ["e4", "f4", "g4", "a4", "b4"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["e4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 4
-};
+		//range -7 - 0
+		if (level === 2) {
+			const consonance = consonances[Math.floor(Math.random() * consonances.length)];
+			let index = noteIndex1[i] - consonance;
 
-levels[7] = {
-	noteSet: ["c4", "d4", "e4", "f4", "g4", "a4", "b4"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["c4", "d4", "e4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 6
-};
-
-levels[8] = {
-	noteSet: ["f4", "g4", "a4", "b4", "c5"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["f4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 4
-};
-
-levels[9] = {
-	noteSet: ["c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5"],
-	get diatonicMidiSet() {return getDiatonicMidi(this.noteSet)},
-	handPositions: ["c4", "d4", "e4", "f4"],
-	get midiHandPositions() {return getDiatonicMidi(this.handPositions)},
-	maxInterval: 7
-};
-
-/*
-livello	noteSet	handPos maxInterval
-1 		c-g		c 		seconda
-2 		c-g		c 		terza
-3		c-g		c 		quinta
-4		d-a		d 		terza
-5		d-a		d 		quinta
-6		c-a		c, d 	quinta
-7		e-b		e 		quinta
-8		c-b		c, d, e quinta
-9		f-c'	f 		quinta
-10		c-c'	c, f 	ottava
-*/
-
-const getDiatonicMidi = (notes) => {
-	//c2 = 0
-	//c3 = 7
-	//c4 = 14
-	//c5 = 21
-
-	const midis = [];
-
-	for (let note of notes) {
-		const name = note[0];
-		const okt = (parseInt(note[note.length - 1]) - 2) * 7;
-
-		let midi = 0;
-
-		switch (name) {
-			case "c": midi = 0; break;
-			case "d": midi = 1; break;
-			case "e": midi = 2; break;
-			case "f": midi = 3; break;
-			case "g": midi = 4; break;
-			case "a": midi = 5; break;
-			case "b": midi = 6; break;
-		}
-
-		midis.push(midi + okt);
-	}
-
-	return midis;
-}
-
-/*
-ALGORITMO PER TROVARE LE HAND-POSITION
-calcola lo sforzo minore tra nota e dito precedente e nota e dito successivo
-stesso dito è uno sforzo grande
-dita invertite (es do-re con 2-1) è uno sforzo estremo
-per le prime due note fai tutte le combinazioni [1-1, 1-2, 1-3, ..., 5-4, 5-5]
-
-oppure calcola tutte le combinazioni:
-	1-1-1-1-1-1-1-1
-	1-1-1-1-1-1-1-2
-	1-1-1-1-1-1-2-1
-	1-1-1-1-1-1-2-2
-	1-1-1-1-1-2-1-1 ecc.
-
-*/
-
-//5 - 1 | - | - | 3 - 1
-// 
-
-const handPositionFinder = (level, midiSequence) => {
-	const diatonicMidiSet = getDiatonicMidi(midiSequence);
-	const diatonicHandPositions = level.midiHandPositions;
-	const handPositions = [];
-
-	while (diatonicMidiSet.length > 0) {
-		const fitness = new Array(diatonicHandPositions.length).fill(0);
-
-		for (let i = 0; i < diatonicHandPositions.length; i++) {
-			for (let j = 0; j < diatonicMidiSet.length; j++) {
-				if (diatonicMidiSet[j] >= diatonicHandPositions[i] && diatonicMidiSet[j] <= diatonicHandPositions[i] + 4) {
-					fitness[i]++;
-				} else {
-					break;
-				}
+			if (index < -7) {
+				index += 7;
+			} else if (index > 0) {
+				index -= 7;
 			}
+
+			noteIndex2[i] = index;
 		}
-
-		let maxFitness = -1;
-		let maxIndex = -1;
-
-		for (let i = 0; i < fitness.length; i++) {
-			if (fitness[i] > maxFitness) {
-				maxFitness = fitness[i];
-				maxIndex = i;
-			}
-		}
-
-		if (maxFitness === 0) {
-			console.error("Non è possibile raggiungere tutte le note con le handPosition scelte");
-			return;
-		}
-
-		for (let i = 0; i < maxFitness; i++) {
-			handPositions.push(diatonicHandPositions[maxIndex]);
-		}
-
-		diatonicMidiSet.splice(0, maxFitness);
 	}
 
-	return handPositions;
-}
+	const noteSet1 = [];
+	const noteSet2 = [];
 
-//GENERATORE DI NOTESET
+	for (let i = 0; i < 8; i++) {
+		const note1 = notePool[noteIndex1[i]];
+		let okt1 = noteIndex1[i] === 7 ? 5 : 4;
 
-const generateSet = (level, num = 8) => {
-	const midiSet = level.diatonicMidiSet;
-	const maxInt = level.maxInterval;
+		if (level === 1) okt1--;
 
-	const minMidi = midiSet[0];
-	const maxMidi = midiSet[midiSet.length - 1];
+		noteSet1[i] = note1 + okt1;
 
-	const midis = [];
-
-	midis[0] = midiSet[Math.floor(Math.random() * midiSet.length)];
-
-	for (let i = 1; i < num; i++) {
-		const prevMidi = midis[i - 1];
-		const possibleMidis = [];
-
-		for (let int = -maxInt; int <= maxInt; int++) {
-			const nextMidi = prevMidi + int;
-			if (nextMidi >= minMidi && nextMidi <= maxMidi) {
-				possibleMidis.push(nextMidi);
-			}
-		}
-
-		if (possibleMidis.length === 0) {
-			console.error("Impossibile generare il set. Errore alla " + i + " iterazione");
-			return;
-		}
-
-		midis[i] = possibleMidis[Math.floor(Math.random() * possibleMidis.length)];
+		const note2 = notePool[noteIndex2[i] + 7];
+		const okt2 = noteIndex2[i] === 0 ? 4 : 3;
+		noteSet2[i] = note2 + okt2;
 	}
 
-	return diatonicMidiToNotes(midis);
+	return {notes1: noteSet1, notes2: noteSet2};
 }
 
 
-// TRADUTTORE DA DIATONICMIDI A NOTE
+//=======================//
+// CANVAS DI PENTAGRAMMA //
+//=======================//
 
-const diatonicMidiToNotes = (midis) => {
-	const notes = [];
-	const notePool = ["c", "d", "e", "f", "g", "a", "b"];
+const createScore = (cnv, options) => {
+	const noteSpacing = options.noteSpacing || 1;
+	const clef = options.clef || "treble";
+	const x = options.staveX || 0;
+	const y = options.staveY || 0;
+	const w = options.staveWidth || 100;
+	const notes = options.notes || [];
+	const fontSize = options.fontSize || 60;
+	const xClef = options.xClef || 20;
 
-	for (let midi of midis) {
-		const note = notePool[midi % 7];
-		const okt = Math.floor(midi / 7) + 2;
-
-		notes.push(note + okt);
-	}
-
-	return notes;
-}
-
-//====================================//
-// CANVAS DI BACKGROUND (PENTAGRAMMA) //
-//====================================//
-
-const createScore = (cnv, fontSize, noteSpacing) => {
 	const score = new Score(cnv, fontSize, noteSpacing);
 
-	score.addStave().setStaveDim(50, 50, 1200);
-	score.addClef("treble").setXClef(20);
+	score.addStave().setStaveDim(x, y, w);
+	score.addClef(clef).setXClef(xClef);
 	score.addNotes(notes);
 
 	return score;
 }
 
-const drawHandPositions = (ctx, noteXs) => {
-	const handPos = handPositionFinder(levels[LEVEL], notes);
 
-	const spacing = noteXs[1] - noteXs[0];
-
-	for (let i = 0; i < noteXs.length; i++) {
-		ctx.fillStyle = handPositionColors[handPos[i] - 14];
-		ctx.fillRect(noteXs[i] - spacing * 0.5, 30, spacing, 150);	
-	}
-}
-
-
-const LEVEL = 9;
+const LEVEL = 0;
 
 const scoreCnv = createCanvas();
 const scoreCtx = setupCanvas(scoreCnv, 0, 0, WIDTH, HEIGHT, document.body);
 
-const notes = generateSet(levels[LEVEL]);
+const staveNum = levels[LEVEL].staves;
+const {notes1, notes2} = getNoteSet(levels[LEVEL].level);
+
 let noteXs;
 let midiNoteSet;
-
 
 //======================//
 // CANVAS DI ANIMAZIONE //
 //======================//
 
-const pointCnv = createCanvas();
-const pointCtx = setupCanvas(pointCnv, 0, 0, WIDTH, HEIGHT, document.body)
+const setLifeBarColor = (t) => {
+	const halfTime = TOTAL_TIME / 2;
+	let red;
+	let green;
 
-let currentPointerX = 0;
+	if (t > halfTime) {
+		red = Math.floor(255 * (2 - t / halfTime));
+		green = 255;
+	} else {
+		red = 255;
+		green = Math.floor(t / halfTime * 255);
+	}
+
+	return "rgb(" + red + ", " + green + ", 0)";
+}
+
+const animeCnv = createCanvas();
+const animeCtx = setupCanvas(animeCnv, 0, 0, WIDTH, HEIGHT, document.body)
+animeCtx.font = SCORE_FONT_SIZE + "px bold Arial";
+
+let pitchListener = "click";
+
+let gameIsRunning = false;
+
+let dino;
+
+let time = TOTAL_TIME;
+let timeFromLastFrame = 0;
+let prevFrameTime = 0;
+
+let punteggio = 0;
 
 let ID;
 const loop = () => {
 	ID = requestAnimationFrame(loop);
 
-	const x = noteXs[currentPointerX];
+	const gameOver = time < 0;
 
-	pointCtx.clearRect(0, 0, 1000, 500);
-	pointCtx.fillStyle = "#ff0000";
-	pointCtx.fillRect(x - 10, 200, 20, 20);
+	//time setting
+	const now = performance.now();
+	timeFromLastFrame = now - timeFromLastFrame;
 
-	pointCtx.font = "40px Arial";
-	pointCtx.fillText(currentMidiPitch, 100, 300);
+	if (ID > 3) time -= timeFromLastFrame;
+	timeFromLastFrame = now;
+
+	//update
+	if (gameOver && !dino.dead && !dino.isJumping) {
+		dino.toDeath();
+	}
+
+	dino.update(ID);
+
+	//graphics
+	const {x, y, w, h} = LIFE_BAR_DIM;
+
+	animeCtx.clearRect(dino.x - 50, dino.y - 50, dino.w + 100, dino.h + 100);
+	animeCtx.clearRect(x, y, w, h);
+	animeCtx.clearRect(TILE_SIZE * 5, 0, TILE_SIZE, TILE_SIZE);
+
+	if (!gameOver) {
+		const barLifeHeight = -time / TOTAL_TIME * h;
+		animeCtx.fillStyle = setLifeBarColor(time);
+		animeCtx.fillRect(x, y + h, w, barLifeHeight);
+	}
+
+	const punteggioDim = animeCtx.measureText(punteggio);
+	const punteggioW2 = punteggioDim.width / 2;
+	const punteggioH2 = SCORE_FONT_SIZE / 2;
+
+	animeCtx.fillText(punteggio, TILE_SIZE * 5.5 - punteggioW2, TILE_SIZE * 0.5 + punteggioH2);
+
+	dino.draw();
 }
 
 //========================//
 // PARTENZA DEL MICROFONO //
 //========================//
 
+/*
 startMic().then(async() => {
 	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
 	micStarted = true;
 });
+*/
 
-
-//==================//
-// ENTER FULLSCREEN //
-//==================//
+//=========================//
+// SETUP GAME E FULLSCREEN //
+//=========================//
 
 let micStarted = false;
 
-document.addEventListener("pointerdown", () => {
-	if (document.fullscreen || !micStarted) return;
+document.addEventListener("pointerdown", async () => {
+	if (document.fullscreen || gameIsRunning) return;
+
+	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
 	document.body.requestFullscreen();
 
-	const score = createScore(scoreCnv, SCORE_FONT_SIZE, 1.3);
-	noteXs = score.getNotesAbsoluteCoordinates();
-	midiNoteSet = score.getMidiSet();
+	addBackgroundToCanvas(tileSets[LEVEL], scoreCnv, TILE_SIZE);
 
-	scoreCtx.fillStyle = "#ffffff";
-	scoreCtx.fillRect(0, 0, WIDTH, HEIGHT);
+	const bgScreenCenterX = TILE_SIZE * 5.5;
+	const staveWidth = WIDTH * 0.7;
+	const x = bgScreenCenterX - staveWidth * 0.5; //(WIDTH - staveWidth) * 0.5;
+	const xClef = WIDTH * 0.025;
+	const staveHeight = SCORE_FONT_SIZE;
+	const staveDistance = staveNum === 1 ? 0 : staveHeight * 2;
+	const systemHeight = staveDistance + staveHeight;
+	const bgScreenCenterY = TILE_SIZE * 2.5;
+	const y = bgScreenCenterY - systemHeight * 0.5;
+	
+	const scoreOptions = [];
+	const scores = [];
+	let connector;
+
+	scoreOptions[0] = {
+		staveX: x,
+		staveY: y, 
+		staveWidth: staveWidth,
+		clef: levels[LEVEL].clef[0],
+		xClef: xClef,
+		notes: notes1,
+		fontSize: SCORE_FONT_SIZE,
+		noteSpacing: RELATIVE_NOTE_SPACING
+	};
+
+	if (staveNum === 2) {
+		scoreOptions[1] = {
+			staveX: x,
+			staveY: y + staveDistance, 
+			staveWidth: staveWidth,
+			clef: levels[LEVEL].clef[1],
+			xClef: xClef,
+			notes: notes2,
+			fontSize: SCORE_FONT_SIZE,
+			noteSpacing: RELATIVE_NOTE_SPACING
+		};
+	}
+
+	scores[0] = createScore(scoreCnv, scoreOptions[0]);
+	noteXs = scores[0].getNotesAbsoluteCoordinates();
+	midiNoteSet = scores[0].getMidiSet();
+
+	if (staveNum === 2) {
+		scores[1] = createScore(scoreCnv, scoreOptions[1]);
+		
+		connector = Score.createConnector(scores[0], scores[1]);
+	}
+	
+	//scoreCtx.fillStyle = "#ffffff";
+	//scoreCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+	dino = new Dino(noteXs[0] - DINO_IMAGE_WIDTH, HEIGHT * 0.6, 3, animeCnv);
 
 	setTimeout(() => {
-		//drawHandPositions(scoreCtx, noteXs);
-		score.draw();
+		for (let score of scores) score.draw();
+		if (connector) connector.draw();
+		dino.respawn();
 		loop();
-	}, 3600);
+		gameIsRunning = true;
+	}, 500);
+});
+
+//=================//
+// SENZA MICROFONO //
+//=================//
+
+document.addEventListener("pointerdown", () => {
+	if (pitchListener !== "click" || !gameIsRunning) return;
+
+	dino.jump(RELATIVE_NOTE_SPACING);
 });
