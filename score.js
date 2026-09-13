@@ -27,7 +27,7 @@ class Score {
 
 		//note
 		this.notes = [];
-		this.noteSpacing = this.fontSize * noteSpacing;
+		this.noteSpacing = noteSpacing;
 		this.noteXoffset = this.fontSize * 1.25;
 
 		//canvas grafica
@@ -67,6 +67,37 @@ class Score {
 	}
 
 	static noteSpacing = this.noteSpacing;
+
+	static createConnector(sc1, sc2) {
+		const begin = sc1.getAbsoluteLinesCoordinates()[0];
+		const end = sc2.getAbsoluteLinesCoordinates()[4];
+		const ctx = sc1.ctx;
+
+		const connector = {
+			begin: begin,
+			end: end,
+			draw: () => {
+				ctx.strokeStyle = "#000000";
+				ctx.beginPath();
+				ctx.moveTo(begin.x, begin.y);
+				ctx.lineTo(end.x, end.y);
+				ctx.stroke();
+
+				const font = ctx.font;
+
+				const w = ctx.measureText("\ue000").width;
+				const h = end.y - begin.y;
+
+				ctx.font = h + "px Bravura";		
+
+				ctx.fillText("\ue000", begin.x - w * 2, begin.y + h);
+
+				ctx.font = font;
+			}
+		}
+
+		return connector;
+	}
 
 	//--- CREATORS ---
 
@@ -215,6 +246,19 @@ class Score {
 		}
 
 		return noteXs;
+	}
+
+	getAbsoluteLinesCoordinates() {
+		const lineCoordinates = [];
+
+		for (let i = 0; i < 5; i++) {
+			lineCoordinates[i] = {
+				x: this.x + this.xStave,
+				y: this.y + this.yStave + i * this.lineSpacing + 0.5
+			}
+		}
+
+		return lineCoordinates;
 	}
 
 	//--- GRAPHICS ---
