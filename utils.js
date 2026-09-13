@@ -30,6 +30,8 @@ const getWrapper = (_wrapper) => {
 
 const errorCnv = createCanvas();
 const errorCtx = setupCanvas(errorCnv, 0, 0, WIDTH, HEIGHT, document.body);
+errorCnv.style.zIndex = "999";
+errorCtx.font = "20px Arial";
 
 const consoleError = (err) => {
 	errorCtx.clearRect(0, 0, WIDTH, HEIGHT);
