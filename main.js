@@ -91,13 +91,10 @@ const createScore = (cnv, options) => {
 }
 
 
-const LEVEL = 0;
+let LEVEL = 0;
 
 const scoreCnv = createCanvas();
 const scoreCtx = setupCanvas(scoreCnv, 0, 0, WIDTH, HEIGHT, document.body);
-
-const staveNum = levels[LEVEL].staves;
-const {notes1, notes2} = getNoteSet(levels[LEVEL].level);
 
 let noteXs;
 let midiNoteSet;
@@ -137,6 +134,7 @@ let timeFromLastFrame = 0;
 let prevFrameTime = 0;
 
 let punteggio = 0;
+let punteggioParziale = 0;
 
 let ID;
 const loop = () => {
@@ -157,6 +155,30 @@ const loop = () => {
 	}
 
 	dino.update(ID);
+
+	if (punteggioParziale > 7) {
+		punteggioParziale = 0;
+		animeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+		addBackgroundToCanvas(tileSets[LEVEL], scoreCnv, TILE_SIZE);
+		setupScore(levels[LEVEL]);
+		
+		dino.respawn();
+	}
+
+	if (punteggio > 29) {
+		punteggio = 0;
+		punteggioParziale = 0;
+		time = TOTAL_TIME;
+		animeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+		LEVEL++;
+
+		addBackgroundToCanvas(tileSets[LEVEL], scoreCnv, TILE_SIZE);
+		setupScore(levels[LEVEL]);
+		
+		dino.respawn();
+	}
 
 	//graphics
 	const {x, y, w, h} = LIFE_BAR_DIM;
@@ -202,19 +224,41 @@ document.addEventListener("click", async () => {
 	if (document.fullscreen || gameIsRunning) return;
 
 	document.body.requestFullscreen()
-        .then(() => {
+    /*   .then(() => {
             consoleError(window.devicePixelRatio);
         })
         .catch((err) => {
             console.error("Fullscreen rejected:", err);
             consoleError(String(err));
         });
-	
+	*/
 
 	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
 	addBackgroundToCanvas(tileSets[LEVEL], scoreCnv, TILE_SIZE);
 
+	setupScore(levels[LEVEL]);
+
+	dino = new Dino(noteXs[0] - DINO_IMAGE_WIDTH, TILE_SIZE * 5 - DINO_IMAGE_HEIGHT * 3, 3, animeCnv);
+
+	
+	//for (let score of scores) score.draw();
+	
+	//if (connector) connector.draw();
+	
+	dino.respawn();
+	
+	loop();
+	
+	gameIsRunning = true;
+});
+
+//=================//
+// CREAZIONE SCORE //
+//=================//
+
+const setupScore = (level) => {
+	const staveNum = level.staves;
 	const bgScreenCenterX = TILE_SIZE * 5.5;
 	const staveWidth = WIDTH * 0.7;
 	const x = bgScreenCenterX - staveWidth * 0.5; //(WIDTH - staveWidth) * 0.5;
@@ -229,11 +273,13 @@ document.addEventListener("click", async () => {
 	const scores = [];
 	let connector;
 
+	const {notes1, notes2} = getNoteSet(levels[LEVEL].level);
+
 	scoreOptions[0] = {
 		staveX: x,
 		staveY: y, 
 		staveWidth: staveWidth,
-		clef: levels[LEVEL].clef[0],
+		clef: level.clef[0],
 		xClef: xClef,
 		notes: notes1,
 		fontSize: SCORE_FONT_SIZE,
@@ -245,7 +291,7 @@ document.addEventListener("click", async () => {
 			staveX: x,
 			staveY: y + staveDistance, 
 			staveWidth: staveWidth,
-			clef: levels[LEVEL].clef[1],
+			clef: level.clef[1],
 			xClef: xClef,
 			notes: notes2,
 			fontSize: SCORE_FONT_SIZE,
@@ -259,23 +305,13 @@ document.addEventListener("click", async () => {
 
 	if (staveNum === 2) {
 		scores[1] = createScore(scoreCnv, scoreOptions[1]);
-		
 		connector = Score.createConnector(scores[0], scores[1]);
 	}
-	
-	//scoreCtx.fillStyle = "#ffffff";
-	//scoreCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
-	dino = new Dino(noteXs[0] - DINO_IMAGE_WIDTH, TILE_SIZE * 5 - DINO_IMAGE_HEIGHT * 3, 3, animeCnv);
-
-	setTimeout(() => {
-		for (let score of scores) score.draw();
-		if (connector) connector.draw();
-		dino.respawn();
-		loop();
-		gameIsRunning = true;
-	}, 500);
-});
+	for (const score of scores) score.draw();
+	if (connector) connector.draw();
+	//return {scores: scores, connector: connector};
+}
 
 //=================//
 // SENZA MICROFONO //
