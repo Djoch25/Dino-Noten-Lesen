@@ -201,8 +201,15 @@ let micStarted = false;
 document.addEventListener("pointerdown", async () => {
 	if (document.fullscreen || gameIsRunning) return;
 
-	await document.body.requestFullscreen();
-	consoleError(document.fullscreen);
+	document.body.requestFullscreen()
+        .then(() => {
+            consoleError("Fullscreen OK");
+        })
+        .catch((err) => {
+            console.error("Fullscreen rejected:", err);
+            consoleError(String(err));
+        });
+	
 
 	/*await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
