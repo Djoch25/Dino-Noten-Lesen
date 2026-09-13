@@ -1,75 +1,52 @@
 class PitchProcessor extends AudioWorkletProcessor {
-	constructor() {
-		super();
 
-		this.bufferSize = 2048;
-        this.hopSize = 512;
+    constructor() {
+        super();
 
-		this.buffer = new Float32Array(this.bufferSize);
-		this.index = 0;
+        this.bufferSize = 2048;
+        this.buffer = new Float32Array(this.bufferSize);
+        this.index = 0;
 
-        this.pitchConfidence = 0.8;
+        this.maxLag = 1000;
+    }
 
-        this.minLag = Math.floor(sampleRate / 550);
-        this.maxLag = Math.ceil(sampleRate / 250);
 
-        this.detectionAvailable = true;
+    process(inputs) {
+       const input = inputs[0];
 
-        this.releaseCount = 0;
-        this.releaseThreshold = 3;
-	}
+        if (!input || input.length === 0 || this.maxLag === -1) {
+            return true;
+        }
 
-	process(inputs) {
-		//inputs è l'array che contiene l'array dei due canali
-		//inputs[0] è l'array che contiene i due canali L e R
-		//inputs[0][0] è il sample del canale L
+        const samples = input[0]; //questo contiene solo 128 campioni
 
-		const inputSamples = inputs[0][0];
+        if (!samples) {
+            return true;
+        }
 
-		for (let sample of inputSamples) {
-			this.buffer[this.index++] = sample;
+        for (let i = 0; i < samples.length; i++) {
+
+            this.buffer[this.index] = samples[i];
+            this.index++;
+
 
             if (this.index >= this.bufferSize) {
-                this.sendPitch();
-                this.buffer.copyWithin(0, this.hopSize, this.bufferSize);
-                this.index = this.bufferSize - this.hopSize;
+                const frequency = yin(this.buffer, sampleRate, this.maxLag, 0.1);
+                
+                this.port.postMessage(frequency);
+
+                this.index = 0;
             }
-		}
-
-		return true;
-	}
-
-    sendPitch() {
-        const yinDetected = yin(this.buffer, sampleRate, this.maxLag, this.minLag, 0.15); //finestra 250 - 550 Hz
-        const frequency = yinDetected.frequency;
-        const confidence = yinDetected.confidence;
-
-        if (frequency <= 0 || confidence < this.pitchConfidence) {
-            this.releaseCount++;
-
-            if (this.releaseCount >= this.releaseThreshold) {
-                this.detectionAvailable = true;
-            }   
-
-            return;
         }
-
-        this.releaseCount = 0;
-
-        if (this.detectionAvailable) {
-            const midiPitch = Math.round(12 * Math.log2(frequency / 440)) + 69;
-        
-            this.port.postMessage(midiPitch);
-
-            this.detectionAvailable = false;
-        }
+      
+        return true;
     }
 }
 
 registerProcessor("audio_worklet", PitchProcessor);
 
-const yin = (buffer, sampleRate, maxLag, minLag, threshold = 0.1) => {
-	const len = buffer.length;
+const yin = (buffer, sampleRate, maxLag, threshold = 0.1) => {
+    const len = buffer.length;
 
     // 1. Difference Function
     const df = new Float32Array(maxLag + 1);
@@ -94,17 +71,22 @@ const yin = (buffer, sampleRate, maxLag, minLag, threshold = 0.1) => {
     for (let tau = 1; tau <= maxLag; tau++) {
         runningSum += df[tau];
 
-        cmndf[tau] = runningSum === 0 ? 1 : (df[tau] * (tau)) / runningSum;
+        cmndf[tau] = runningSum === 0
+            ? 1
+            : (df[tau] * tau) / runningSum;
     }
 
     // 3. Absolute threshold
     let tau = -1;
 
-    for (let i = minLag; i <= maxLag; i++) {
+    for (let i = 2; i <= maxLag; i++) {
         if (cmndf[i] < threshold) {
 
             // cerca il minimo locale
-            while (i + 1 <= maxLag && cmndf[i + 1] < cmndf[i]) {
+            while (
+                i + 1 <= maxLag &&
+                cmndf[i + 1] < cmndf[i]
+            ) {
                 i++;
             }
 
@@ -116,7 +98,7 @@ const yin = (buffer, sampleRate, maxLag, minLag, threshold = 0.1) => {
     if (tau === -1) {
         return {
             frequency: -1,
-            confidence: 0
+            probability: -1
         }
     }
 
@@ -136,8 +118,10 @@ const yin = (buffer, sampleRate, maxLag, minLag, threshold = 0.1) => {
     }
 
     // 5. Frequenza fondamentale
+    const frequency = sampleRate / betterTau;
+
     return {
-        frequency: sampleRate / betterTau,
-        confidence: 1 - cmndf[tau]
-    }
+        frequency,
+        confidence: 1 - cmndf[tau],
+    };
 }
