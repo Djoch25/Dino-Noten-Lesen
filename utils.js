@@ -11,6 +11,7 @@ const setupCanvas = (_cnv, _x, _y, _w, _h, _wrapper) => {
 	_cnv.style.width = screen.width + "px";
 	_cnv.style.height = screen.height + "px";
 
+	console.log("SETUP:", _cnv, _cnv.style.width, _cnv.style.height);
 	if (_wrapper) _wrapper.appendChild(_cnv); 
 
 	return _cnv.getContext("2d");
