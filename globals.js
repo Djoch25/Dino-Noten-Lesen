@@ -1,3 +1,5 @@
+const SCREEN_WIDTH = Math.max(screen.width, screen.height);
+const SCREEN_HEIGHT = Math.min(screen.width, screen.height);
 const WIDTH = 1200;
 const HEIGHT = 700;
 
