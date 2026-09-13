@@ -21,6 +21,7 @@ const getImageSet = (folderName, nameSet) => {
 
 const addBackgroundToCanvas = (ts, cnv, size) => {
 	const ctx = cnv.getContext("2d");
+	const yOffset = TILE_Y_OFFSET;	
 	
 	ctx.drawImage(ts[0], 0, 0, cnv.width, cnv.height);
 
@@ -28,34 +29,33 @@ const addBackgroundToCanvas = (ts, cnv, size) => {
 	if (ts[13].width) for (let i = 0; i < 12; i++) ctx.drawImage(ts[13], size * i, size * 6.75, size, size);
 	if (ts[14].width) for (let i = 0; i < 12; i++) ctx.drawImage(ts[14], size * i, size * 6, size, size);
 
-
 	//terreno
-	ctx.drawImage(ts[10], size * 1, size * 5, size, size);
-	for (let i = 2; i < 9; i++) ctx.drawImage(ts[11], size * i, size * 5, size, size);
-	ctx.drawImage(ts[12], size * 9, size * 5, size, size);
+	ctx.drawImage(ts[10], size * 1, size * (5 + yOffset), size, size);
+	for (let i = 2; i < 9; i++) ctx.drawImage(ts[11], size * i, size * (5 + yOffset), size, size);
+	ctx.drawImage(ts[12], size * 9, size * (5 + yOffset), size, size);
 
 	//schermo sopra
-	ctx.drawImage(ts[1], size * 0.5, size * 0.5, size, size);
-	ctx.drawImage(ts[3], size * 9.5, size * 0.5, size, size);
-	for (let i = 1; i < 9; i++) ctx.drawImage(ts[2], size * (i + 0.5), size * 0.5, size, size);
+	ctx.drawImage(ts[1], size * 0.5, size * (0.5 + yOffset), size, size);
+	ctx.drawImage(ts[3], size * 9.5, size * (0.5 + yOffset), size, size);
+	for (let i = 1; i < 9; i++) ctx.drawImage(ts[2], size * (i + 0.5), size * (0.5 + yOffset), size, size);
 
 	//schermo centro
-	ctx.drawImage(ts[4], size * 0.5, size * 2.5, size, size);
-	ctx.drawImage(ts[6], size * 9.5, size * 2.5, size, size);
-	for (let i = 1; i < 9; i++) ctx.drawImage(ts[5], size * (i + 0.5), size * 2.5, size, size);
+	ctx.drawImage(ts[4], size * 0.5, size * (2.5 + yOffset), size, size);
+	ctx.drawImage(ts[6], size * 9.5, size * (2.5 + yOffset), size, size);
+	for (let i = 1; i < 9; i++) ctx.drawImage(ts[5], size * (i + 0.5), size * (2.5 + yOffset), size, size);
 
-	ctx.drawImage(ts[4], size * 0.5, size * 1.5, size, size);
-	ctx.drawImage(ts[6], size * 9.5, size * 1.5, size, size);
-	for (let i = 1; i < 9; i++) ctx.drawImage(ts[5], size * (i + 0.5), size * 1.5, size, size);
+	ctx.drawImage(ts[4], size * 0.5, size * (1.5 + yOffset), size, size);
+	ctx.drawImage(ts[6], size * 9.5, size * (1.5 + yOffset), size, size);
+	for (let i = 1; i < 9; i++) ctx.drawImage(ts[5], size * (i + 0.5), size * (1.5 + yOffset), size, size);
 
 	//schermo sotto
-	ctx.drawImage(ts[7], size * 0.5, size * 3.5, size, size);
-	ctx.drawImage(ts[9], size * 9.5, size * 3.5, size, size);
-	for (let i = 1; i < 9; i++) ctx.drawImage(ts[8], size * (i + 0.5), size * 3.5, size, size);
+	ctx.drawImage(ts[7], size * 0.5, size * (3.5 + yOffset), size, size);
+	ctx.drawImage(ts[9], size * 9.5, size * (3.5 + yOffset), size, size);
+	for (let i = 1; i < 9; i++) ctx.drawImage(ts[8], size * (i + 0.5), size * (3.5  + yOffset), size, size);
 
 	//schermo bianco
 	ctx.fillStyle = "#ffffff99";
-	ctx.fillRect(size * 1, size * 1, size * 9, size * 3);
+	ctx.fillRect(size * 1, size * (1 + yOffset), size * 9, size * 3);
 
 	//barra energia
 	ctx.drawImage(ts[2], size * 10.75, size * 0.25, size, size);
