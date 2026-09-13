@@ -27,3 +27,12 @@ const getWrapper = (_wrapper) => {
 
 	return _div;
 }
+
+const errorCnv = createCanvas();
+const errorCtx = setupCanvas(errorCnv, 0, 0, WIDTH, HEIGHT, document.body);
+
+const consoleError = (err) => {
+	errorCtx.clearRect(0, 0, WIDTH, HEIGHT);
+	errorCtx.fillStyle = "#ff0000";
+	errorCtx.fillText(err, 25, 25);
+}
