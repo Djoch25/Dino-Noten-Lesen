@@ -1,5 +1,5 @@
-const WIDTH = Math.max(screen.width, screen.height);
-const HEIGHT = Math.min(screen.width, screen.height);
+const WIDTH = 1200;
+const HEIGHT = 700;
 
 const SCORE_FONT_SIZE = WIDTH * 0.05;
 const RELATIVE_NOTE_SPACING = WIDTH * 0.08;
