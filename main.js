@@ -199,6 +199,7 @@ startMic().then(async() => {
 let micStarted = false;
 
 document.addEventListener("pointerdown", async () => {
+	try {
 	if (document.fullscreen || gameIsRunning) return;
 
 	document.body.requestFullscreen();
@@ -267,6 +268,10 @@ document.addEventListener("pointerdown", async () => {
 		loop();
 		gameIsRunning = true;
 	}, 500);
+
+	} catch(err) {
+		consoleError(err);
+	}
 });
 
 //=================//
