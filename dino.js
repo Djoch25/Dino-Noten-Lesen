@@ -55,37 +55,6 @@ class BasicDino {
 
 		this.velX = dX * 100 / t;
 	}
-
-	/*
-	update(id) {
-		const timing = id % 5 == 0;
-
-		if (this.isJumping) {
-			this.x += this.velX;
-			this.y += this.velY;
-			this.velY += this.accY;
-
-			if (this.y > this.groundY && this.velY >= 0) {
-				this.velX = 0;
-				this.y = this.groundY;
-				this.velY = 0;
-				this.accY = 0;
-				this.isJumping = false;
-				this.imgI = 0;
-			}
-
-			if (timing) this.imgI++; 
-			if (this.imgI == 20) this.imgI = 10;
-		} else {
-			if (timing) this.imgI++;
-			if (this.imgI == 10) this.imgI = 0;
-		}
-	}
-	*/
-
-	draw() {
-		this.ctx.drawImage(dinoImgs[this.imgI], this.x, this.y, this.w, this.h);
-	}
 }
 
 class Dino extends BasicDino {
@@ -142,8 +111,10 @@ class Dino extends BasicDino {
 
 		this.velX = distance / this.framePerJump;
 
-		punteggio++;
+		punteggioTotale++;
+		punteggioLivello++;
 		punteggioParziale++;
+		midiTargetIndex++;
 	}
 
 	update(id) {
@@ -182,8 +153,6 @@ class Dino extends BasicDino {
 	}
 
 	draw() {
-		this.ctx.fillStyle = "#ff000077";
-		//this.ctx.fillRect(this.x, this.y, this.w, this.h);
 		this.ctx.drawImage(this.dinoImgs[this.imgI], this.x, this.y, this.w, this.h);
 	}
 }
