@@ -228,7 +228,7 @@ document.addEventListener("click", async () => {
 
 	setupScore(levels[LEVEL]);
 
-	dino = new Dino(noteXs[0], TILE_SIZE * (5 + TILE_Y_OFFSET), 3 * SCALE, animeCnv);
+	dino = new Dino(noteXs[0] - 25, TILE_SIZE * (5 + TILE_Y_OFFSET), 3 * SCALE, animeCnv);
 
 	dino.respawn();
 	
