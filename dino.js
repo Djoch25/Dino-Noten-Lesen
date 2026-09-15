@@ -1,6 +1,6 @@
 const DINO_IMAGE_WIDTH = 68;
 const DINO_IMAGE_HEIGHT = 47;
-const DINO_IMAGE_ELEVATION = 15;
+const DINO_IMAGE_ELEVATION = 5
 const DINO_SPRINT_JUMP_SPEED = -13;
 const DINO_GRAVITY = 1;
 
@@ -10,10 +10,10 @@ class BasicDino {
 		this.ctx = this.cnv.getContext("2d");
 		this.cnv.style.pointerEvents = "none";
 
-		this.x = x - DINO_IMAGE_WIDTH * SCALE;
+		this.x = x - DINO_IMAGE_WIDTH * dim;
 		this.initX = this.x;
-		this.y = y - DINO_IMAGE_HEIGHT * SCALE;
-		this.groundY = this.y + DINO_IMAGE_ELEVATION * SCALE; //posizione originale prima del salto
+		this.y = y - DINO_IMAGE_HEIGHT * dim;
+		this.groundY = this.y + DINO_IMAGE_ELEVATION * dim; //posizione originale prima del salto
 		this.w = DINO_IMAGE_WIDTH * dim;
 		this.h = DINO_IMAGE_HEIGHT * dim;
 
