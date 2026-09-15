@@ -10,7 +10,7 @@ class BasicDino {
 		this.ctx = this.cnv.getContext("2d");
 		this.cnv.style.pointerEvents = "none";
 
-		this.x = x;
+		this.x = x - DINO_IMAGE_WIDTH * SCALE;
 		this.initX = this.x;
 		this.y = y - DINO_IMAGE_HEIGHT * dim;
 		this.groundY = this.y + DINO_IMAGE_ELEVATION * dim; //posizione originale prima del salto
