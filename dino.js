@@ -14,8 +14,8 @@ class BasicDino {
 		this.initX = this.x;
 		this.y = y;
 		this.groundY = this.y + DINO_IMAGE_ELEVATION; //posizione originale prima del salto
-		this.w = DINO_IMAGE_WIDTH * dim;
-		this.h = DINO_IMAGE_HEIGHT * dim;
+		this.w = DINO_IMAGE_WIDTH * dim * SCALE;
+		this.h = DINO_IMAGE_HEIGHT * dim * SCALE;
 
 		this.dinoImgs = dinoImgs;
 		this.imgI = 0;
