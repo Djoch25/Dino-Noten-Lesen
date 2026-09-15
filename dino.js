@@ -1,7 +1,7 @@
 const DINO_IMAGE_WIDTH = 68;
 const DINO_IMAGE_HEIGHT = 47;
 const DINO_IMAGE_ELEVATION = 5
-const DINO_SPRINT_JUMP_SPEED = -13;
+const DINO_SPRINT_JUMP_SPEED = -8;
 const DINO_GRAVITY = 1;
 
 class BasicDino {
