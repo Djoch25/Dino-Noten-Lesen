@@ -112,7 +112,6 @@ class Dino extends BasicDino {
 		this.velX = distance / this.framePerJump;
 
 		punteggioTotale++;
-		punteggioLivello++;
 		punteggioParziale++;
 		midiTargetIndex++;
 	}
