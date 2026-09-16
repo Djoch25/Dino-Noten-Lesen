@@ -1,15 +1,43 @@
+let SCALE;
+
 const SCREEN_WIDTH = Math.max(screen.width, screen.height);
 const SCREEN_HEIGHT = Math.min(screen.width, screen.height);
-const SCALE = 0.5;
-const WIDTH = 1200 * SCALE;
-const HEIGHT = 700 * SCALE;
 
-const SCORE_FONT_SIZE = WIDTH * 0.05;
-const RELATIVE_NOTE_SPACING = WIDTH * 0.08;
+let WIDTH, HEIGHT;
+let SCORE_FONT_SIZE, RELATIVE_NOTE_SPACING;
+let TILE_SIZE, TILE_Y_OFFSET;
 
-const TILE_SIZE = WIDTH / 12;
-const TILE_Y_OFFSET = 0.5;
+let LIFE_BAR_DIM;
+	
+const TOTAL_TIME = 90000;
 
-const LIFE_BAR_DIM = {x: null, y: null, w: null, h: null};
+const setCanvasDimensions = (scale) => {
+	SCALE = scale;
 
-const TOTAL_TIME = 60000;
+	WIDTH = 1200 * scale;
+	HEIGHT = 700 * scale;
+	
+	SCORE_FONT_SIZE = WIDTH * 0.05;
+	RELATIVE_NOTE_SPACING = WIDTH * 0.08;
+	
+	TILE_SIZE = WIDTH / 12;
+	TILE_Y_OFFSET = 0.5;
+	
+	LIFE_BAR_DIM = {x: null, y: null, w: null, h: null};
+}
+
+let scoreCnv, scoreCtx;
+let animeCnv, animeCtx;
+
+const setAllCanvas = () => {
+	if (!SCALE) {
+		console.error("SCALE NON DEFINITO");
+	}
+
+	scoreCnv = createCanvas();
+	scoreCtx = setupCanvas(scoreCnv, 0, 0, WIDTH, HEIGHT, document.body);
+
+	animeCnv = createCanvas();
+	animeCtx = setupCanvas(animeCnv, 0, 0, WIDTH, HEIGHT, document.body)
+	animeCtx.font = SCORE_FONT_SIZE + "px bold Arial";
+}
