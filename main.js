@@ -82,7 +82,7 @@ const loop = () => {
 		dino.toDeath();
 	}
 
-	if (LEVEL < 2 && currentMidiPitch === midiNoteSet[midiTargetIndex]) {
+	if (LEVEL !== 10 && currentMidiPitch === midiNoteSet[midiTargetIndex]) {
 		dino.jump(RELATIVE_NOTE_SPACING);
 	}
 
