@@ -30,6 +30,7 @@ const getWrapper = (_wrapper) => {
 	return _div;
 }
 
+/*
 const errorCnv = createCanvas();
 const errorCtx = setupCanvas(errorCnv, 0, 0, WIDTH, HEIGHT, document.body);
 errorCnv.style.zIndex = "999";
@@ -39,4 +40,24 @@ const consoleError = (err) => {
 	errorCtx.clearRect(0, 0, WIDTH, HEIGHT);
 	errorCtx.fillStyle = "#ff0000";
 	errorCtx.fillText(err, 25, 25);
+}
+*/
+
+const createButton = (text, x, y, w, h, wrapper) => {
+	const _btn = document.createElement("button");
+	_btn.style.position = "absolute";
+	_btn.style.left = (x - w/2) + "px";
+	_btn.style.top = (y - h/2) + "px";
+	_btn.style.width = w + "px";
+	_btn.style.height = h + "px";
+
+	_btn.textContent = text;
+
+	if (wrapper) wrapper.appendChild(_btn);
+
+	return _btn;
+}
+
+const destroyButtons = (...btns) => {
+	for (let btn of btns) btn.parentElement.removeChild(btn);
 }
