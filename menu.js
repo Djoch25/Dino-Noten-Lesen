@@ -31,8 +31,8 @@ const createMenu = (levels) => {
 
 	for (let i = 0; i < levels.length; i++) {
 		const level = levels[i].level;
-		const x = ((i + 1) % 5) * WIDTH * 0.1 / SCALE;
-		const y = Math.floor(i + 1) / 5 * HEIGHT * 0.2 / SCALE;
+		const x = ((i) % 5 + 1) * WIDTH * 0.1 / SCALE;
+		const y = (Math.floor(i / 5) + 1) * HEIGHT * 0.2 / SCALE;
 		const w = WIDTH * 0.08 / SCALE;
 		const h = w;
 
