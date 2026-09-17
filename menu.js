@@ -1,28 +1,20 @@
-const scaleBtn1 = createButton("HIGH QUALITY", window.innerWidth / 2 - 300, window.innerHeight / 2, 200, 200, document.body);
-const scaleBtn2 = createButton("LOW QUALITY", window.innerWidth / 2 + 300, window.innerHeight / 2, 200, 200, document.body);
+const scaleBtns = [];
+const scaleBtnNames = ["HIGH QUALITY", "MEDIUM QUALITY", "LOW QUALITY"];
+const scaleQualities = [1, 0.75, 0.5];
 
-scaleBtn1.addEventListener("click", () => {
-	destroyButtons(scaleBtn1, scaleBtn2);
+for (let i = 0; i < 3; i++) {
+	scaleBtns[i] = createButton(scaleBtnNames[i], window.innerWidth / 2 + (i - 1) * 300, window.innerHeight / 2, 200, 200, document.body);
+	scaleBtns[i].addEventListener("click", () => {
+		destroyButtons(...scaleBtns);
 	
-	setCanvasDimensions(1);
-	setAllCanvas();
+		setCanvasDimensions(scaleQualities[i]);
+		setAllCanvas();
 
-	createMenu(levels);
+		createMenu(levels);
 
-	document.body.requestFullscreen();
-});
-
-scaleBtn2.addEventListener("click", () => {
-	destroyButtons(scaleBtn1, scaleBtn2);
-	
-	setCanvasDimensions(0.5);
-	setAllCanvas();
-
-	createMenu(levels);
-
-
-	document.body.requestFullscreen();
-});
+		document.body.requestFullscreen();
+	});
+}
 
 const createMenu = (levels) => {
 	const btns = [];
