@@ -143,6 +143,9 @@ class Dino extends BasicDino {
 		if (this.imgI >= 28) {
 			this.imgI = 27;
 			cancelAnimationFrame(id);
+
+			scoreCtx.drawImage(zzz, this.x + this.w / 3, this.y - this.h / 3, this.w, this.h);
+			//setTimeout(() => {animeCtx.drawImage(zzz, this.x + this.w / 3, this.y - this.h / 3, this.w, this.h)}, 50);
 		}
 	}
 
