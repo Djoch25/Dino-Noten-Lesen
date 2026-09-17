@@ -112,3 +112,5 @@ const dinoImgs = getImageSet("freedinosprite", [
 	"Dead(8)"
 	]
 );
+
+const zzz = getImageSet("zzz", ["zzz"])[0];
