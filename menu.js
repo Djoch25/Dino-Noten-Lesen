@@ -3,7 +3,7 @@ const scaleBtnNames = ["HIGH QUALITY", "MEDIUM QUALITY", "LOW QUALITY"];
 const scaleQualities = [1, 0.75, 0.5];
 
 for (let i = 0; i < 3; i++) {
-	scaleBtns[i] = createButton(scaleBtnNames[i], window.innerWidth / 2 + (i - 1) * 300, window.innerHeight / 2, 200, 200, document.body);
+	scaleBtns[i] = createButton(scaleBtnNames[i], screen.width / 2 + (i - 1) * 300, screen.height / 2, 200, 200, false);
 	scaleBtns[i].addEventListener("click", () => {
 		destroyButtons(...scaleBtns);
 	
@@ -11,12 +11,16 @@ for (let i = 0; i < 3; i++) {
 		setAllCanvas();
 
 		createMenu(levels);
-
-		document.body.requestFullscreen();
 	});
 }
 
 const createMenu = (levels) => {
+	punteggioTotale = 0;
+	punteggioParziale = 0;
+	scores.splice(0, scores.length);
+	time = TOTAL_TIME;
+	frameCounter = 0;
+
 	const btns = [];
 	document.documentElement.style.backgroundColor = "#55ff55";
 	document.body.style.backgroundColor = "#55ff55";
@@ -41,4 +45,26 @@ const createMenu = (levels) => {
 			document.body.style.backgroundColor = "";
 		});
 	}
+}
+
+const micBtns = [];
+const micBtnNames = ["MIC ON", "MIC OFF"];
+
+for (let i = 0; i < 2; i++) {
+	micBtns[i] = createButton(micBtnNames[i], window.innerWidth / 2 + (i * 2 - 1) * 250, window.innerHeight / 2, 200, 200, document.body);
+	micBtns[i].addEventListener("click", () => {
+		destroyButtons(...micBtns);
+
+		if (i == 0) {
+			startMic().then(() => {
+				for (const btn of scaleBtns) document.body.appendChild(btn);
+
+				document.body.requestFullscreen();
+			});
+		} else {
+			for (const btn of scaleBtns) document.body.appendChild(btn);
+
+			document.body.requestFullscreen();
+		}
+	});
 }
