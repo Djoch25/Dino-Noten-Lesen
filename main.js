@@ -63,8 +63,11 @@ let punteggioTotale = 0;
 let punteggioParziale = 0;
 
 let ID;
-const loop = () => {
-	ID = requestAnimationFrame(loop);
+let frameCounter = 0;
+
+const mainLoop = () => {
+	ID = requestAnimationFrame(mainLoop);
+	frameCounter++;
 
 	//time setting
 	const gameOver = time < 0;
@@ -72,7 +75,7 @@ const loop = () => {
 	const now = performance.now();
 	timeFromLastFrame = now - timeFromLastFrame;
 
-	if (ID > 3) time -= timeFromLastFrame;
+	if (frameCounter > 3) time -= timeFromLastFrame;
 	timeFromLastFrame = now;
 
 	const level = levels[LEVEL];
@@ -122,6 +125,58 @@ const loop = () => {
 	animeCtx.fillText(punteggioTotale, TILE_SIZE * 5.5 - punteggioW2, TILE_SIZE * 0.5 + punteggioH2);
 
 	dino.draw();
+
+	console.log(currentMidiPitch);
+}
+
+//========================================//
+// LOOP DI FADING PER LA FINE DEL LIVELLO //
+//========================================//
+
+let fadingColor;
+let fadingAlpha = 0;
+let endgame = false;;
+let endBtn;
+
+const endgameLoop = () => {
+	ID = requestAnimationFrame(endgameLoop);
+
+	const alpha = fadingAlpha.toString(16).padStart(2, "0");
+	const color = fadingColor + alpha;
+
+	fadingCtx.fillStyle = color;
+	fadingCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+	if (ID % 4 === 0) fadingAlpha++;
+
+	if (fadingAlpha > 30) {
+		cancelAnimationFrame(ID);
+
+		scoreCtx.clearRect(0, 0, WIDTH, HEIGHT);
+		animeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+		fadingCtx.fillStyle = fadingColor;
+		fadingCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+		punteggioTotale += punteggioTotale == 1 ? " PUNKT!" : " PUNKTE!";
+
+		const punteggioDim = fadingCtx.measureText(punteggioTotale);
+		const punteggioW2 = punteggioDim.width / 2;
+		const punteggioH2 = SCORE_FONT_SIZE / 2;
+
+		fadingCtx.fillStyle = "#ff0000";
+		fadingCtx.fillText(punteggioTotale, WIDTH / 2 - punteggioW2, HEIGHT / 4 + punteggioH2);
+	
+		endBtn = createButton("BACK TO LEVEL MENU", screen.width / 2, screen.height * 0.75, 200, 100, document.body);
+		endBtn.addEventListener("click", () => {
+			animeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+			fadingCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+			document.body.removeChild(fadingCnv);
+			destroyButtons(endBtn);
+			createMenu(levels);
+		});
+	}
 }
 
 //=========================//
@@ -136,12 +191,13 @@ const setupGame = async () => {
 	addBackgroundToCanvas(levels[LEVEL].tileSet, scoreCnv, TILE_SIZE);
 
 	setupScore(levels[LEVEL]);
+	fadingColor = levels[LEVEL].color;
 
 	dino = new Dino(noteXs[0] - 15, TILE_SIZE * (5 + TILE_Y_OFFSET), 3 * SCALE, animeCnv);
 
 	dino.respawn();
 	
-	loop();
+	mainLoop();
 	
 	gameIsRunning = true;
 };
@@ -211,13 +267,54 @@ const setupScore = (level) => {
 //=================//
 
 document.addEventListener("pointerdown", () => {
-	if (!gameIsRunning) return;
-
-	dino.jump(RELATIVE_NOTE_SPACING);
+	if (gameIsRunning) {
+		dino.jump(RELATIVE_NOTE_SPACING);
+	}
 });
+
+const updateScore = () => {
+	punteggioTotale++;
+	punteggioParziale++;
+	midiTargetIndex++;
+
+	scoreCtx.clearRect(0, 0, WIDTH, HEIGHT);
+	addBackgroundToCanvas(levels[LEVEL].tileSet, scoreCnv, TILE_SIZE);
+
+	const notes1 = [];
+	const notes2 = [];
+
+	for (const note of scores[0].notes) {
+		notes1.push(note.note);
+	}
+
+	if (scores[1]) {
+		for (const note of scores[1].notes) {
+			notes2.push(note.note);
+		}
+	}
+
+	for (let i = 0; i < notes1.length; i++) {
+		if (notes1[i] !== "m") {
+			notes1[i] = "m";
+			notes2[i] = "m";
+			break;
+		}
+	}
+
+	scores[0].addNotes(notes1);
+
+	if (scores[1]) {
+		scores[1].addNotes(notes2);
+
+		const connector = Score.createConnector(scores[0], scores[1]);
+		connector.draw();
+	}
+
+	for (let score of scores) score.draw();
+}
 
 //========================//
 // PARTENZA DEL MICROFONO //
 //========================//
 
-startMic();
+//startMic();
