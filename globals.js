@@ -9,7 +9,7 @@ let TILE_SIZE, TILE_Y_OFFSET;
 
 let LIFE_BAR_DIM;
 	
-const TOTAL_TIME = 50000;
+const TOTAL_TIME = 90000;
 
 const setCanvasDimensions = (scale) => {
 	SCALE = scale;
