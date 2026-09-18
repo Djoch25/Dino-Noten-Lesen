@@ -88,7 +88,8 @@ class Score {
 				const w = ctx.measureText("\ue000").width;
 				const h = end.y - begin.y;
 
-				ctx.font = h + "px Bravura";		
+				ctx.font = h + "px Bravura";
+				ctx.fillStyle = "#000000";		
 
 				ctx.fillText("\ue000", begin.x - w * 2, begin.y + h);
 
@@ -209,8 +210,14 @@ class Score {
 
 		for (let noteObject of this.notes) {
 			const note = noteObject.note;
-			const okt = parseInt(note[note.length - 1]);
 			const name = note[0];
+
+			if (name === "m") {
+				midis.push(-1);
+				continue;
+			}
+
+			const okt = parseInt(note[note.length - 1]);
 
 			let midi = 0;
 
@@ -286,6 +293,8 @@ class Score {
 
 		//note e tagli addizionali
 		for (let note of this.notes) {
+			if (note.note === "m") continue;
+
 			const x = note.x + this.xClef;
 			const lines = note.lines;
 
