@@ -9,7 +9,7 @@ let TILE_SIZE, TILE_Y_OFFSET;
 
 let LIFE_BAR_DIM;
 	
-const TOTAL_TIME = 90000;
+const TOTAL_TIME = 50000;
 
 const setCanvasDimensions = (scale) => {
 	SCALE = scale;
@@ -28,6 +28,7 @@ const setCanvasDimensions = (scale) => {
 
 let scoreCnv, scoreCtx;
 let animeCnv, animeCtx;
+let fadingCnv, fadingCtx;
 
 const setAllCanvas = () => {
 	if (!SCALE) {
@@ -40,4 +41,8 @@ const setAllCanvas = () => {
 	animeCnv = createCanvas();
 	animeCtx = setupCanvas(animeCnv, 0, 0, WIDTH, HEIGHT, document.body)
 	animeCtx.font = SCORE_FONT_SIZE + "px bold Arial";
+
+	fadingCnv = createCanvas();
+	fadingCtx = setupCanvas(fadingCnv, 0, 0, WIDTH, HEIGHT, false)
+	fadingCtx.font = SCORE_FONT_SIZE + "px bold Arial";
 }
