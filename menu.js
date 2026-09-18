@@ -20,6 +20,7 @@ const createMenu = (levels) => {
 	scores.splice(0, scores.length);
 	time = TOTAL_TIME;
 	frameCounter = 0;
+	midiTargetIndex = 0;
 
 	const btns = [];
 	document.documentElement.style.backgroundColor = "#55ff55";
