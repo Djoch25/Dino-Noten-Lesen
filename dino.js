@@ -111,9 +111,7 @@ class Dino extends BasicDino {
 
 		this.velX = distance / this.framePerJump;
 
-		punteggioTotale++;
-		punteggioParziale++;
-		midiTargetIndex++;
+		updateScore();
 	}
 
 	update(id) {
@@ -144,14 +142,19 @@ class Dino extends BasicDino {
 			this.imgI = 27;
 			cancelAnimationFrame(id);
 
-			scoreCtx.drawImage(zzz, this.x + this.w / 3, this.y - this.h / 3, this.w, this.h);
-			//setTimeout(() => {animeCtx.drawImage(zzz, this.x + this.w / 3, this.y - this.h / 3, this.w, this.h)}, 50);
+			gameIsRunning = false;
+			endgame = true;
+			
+			document.body.appendChild(fadingCnv);
+			endgameLoop();
 		}
 	}
 
 	toDeath() {
 		this.dead = true;
 		this.imgI = 20;
+
+		scoreCtx.drawImage(zzz, this.x + this.w / 3, this.y - this.h / 3, this.w, this.h);
 	}
 
 	draw() {
