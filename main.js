@@ -125,8 +125,6 @@ const mainLoop = () => {
 	animeCtx.fillText(punteggioTotale, TILE_SIZE * 5.5 - punteggioW2, TILE_SIZE * 0.5 + punteggioH2);
 
 	dino.draw();
-
-	console.log(currentMidiPitch);
 }
 
 //========================================//
