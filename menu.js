@@ -11,6 +11,8 @@ for (let i = 0; i < 3; i++) {
 		setAllCanvas();
 
 		createMenu(levels);
+
+		document.body.requestFullscreen();
 	});
 }
 
