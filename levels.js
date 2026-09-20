@@ -275,7 +275,7 @@ levels[1][10] = {
 levels[1][11] = {
 	level: "8 \nNoten \nBass",
 	staves: 1,
-	clefs: ["treble"],
+	clefs: ["bass"],
 	noteRanges: [["c3", "d3", "e3", "f3", "g3", "a3", "b3", "c4"]],
 	notes: null,
 	tileSet: desertTileSet,
