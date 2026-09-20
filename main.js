@@ -78,7 +78,7 @@ const mainLoop = () => {
 	if (frameCounter > 3) time -= timeFromLastFrame;
 	timeFromLastFrame = now;
 
-	const level = levels[LEVEL];
+	const level = LEVEL;
 
 	//update
 	if (gameOver && !dino.dead && !dino.isJumping) {
@@ -165,14 +165,14 @@ const endgameLoop = () => {
 		fadingCtx.fillStyle = "#ff0000";
 		fadingCtx.fillText(punteggioTotale, WIDTH / 2 - punteggioW2, HEIGHT / 4 + punteggioH2);
 	
-		endBtn = createButton("BACK TO LEVEL MENU", screen.width / 2, screen.height * 0.75, 200, 100, document.body);
+		endBtn = new GuiButton("", SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.75, 100, 100, document.body, BACK_BUTTON_IMAGE_COORDS);
 		endBtn.addEventListener("click", () => {
 			animeCtx.clearRect(0, 0, WIDTH, HEIGHT);
 			fadingCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
 			document.body.removeChild(fadingCnv);
-			destroyButtons(endBtn);
-			createMenu(levels);
+			GuiButton.destroy(endBtn);
+			createChoiseMenu();
 		});
 	}
 }
@@ -183,13 +183,13 @@ const endgameLoop = () => {
 
 let micStarted = false;
 
-const setupGame = async () => {
+const setupGame = async (level) => {
 	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
-	addBackgroundToCanvas(levels[LEVEL].tileSet, scoreCnv, TILE_SIZE);
+	addBackgroundToCanvas(level.tileSet, scoreCnv, TILE_SIZE);
 
-	setupScore(levels[LEVEL]);
-	fadingColor = levels[LEVEL].color;
+	setupScore(level);
+	fadingColor = level.color;
 
 	dino = new Dino(noteXs[0] - 15, TILE_SIZE * (5 + TILE_Y_OFFSET), 3 * SCALE, animeCnv);
 
@@ -227,7 +227,7 @@ const setupScore = (level) => {
 		staveX: x,
 		staveY: y, 
 		staveWidth: staveWidth,
-		clef: level.clef[0],
+		clef: level.clefs[0],
 		xClef: xClef,
 		notes: notes1,
 		fontSize: SCORE_FONT_SIZE,
@@ -239,7 +239,7 @@ const setupScore = (level) => {
 			staveX: x,
 			staveY: y + staveDistance, 
 			staveWidth: staveWidth,
-			clef: level.clef[1],
+			clef: level.clefs[1],
 			xClef: xClef,
 			notes: notes2,
 			fontSize: SCORE_FONT_SIZE,
@@ -270,49 +270,27 @@ document.addEventListener("pointerdown", () => {
 	}
 });
 
-const updateScore = () => {
+const updateScore = (level) => {
 	punteggioTotale++;
 	punteggioParziale++;
 	midiTargetIndex++;
 
 	scoreCtx.clearRect(0, 0, WIDTH, HEIGHT);
-	addBackgroundToCanvas(levels[LEVEL].tileSet, scoreCnv, TILE_SIZE);
+	addBackgroundToCanvas(level.tileSet, scoreCnv, TILE_SIZE);
 
-	const notes1 = [];
-	const notes2 = [];
+	for (let i = 0; i < scores[0].notes.length; i++) {
+		const color = scores[0].notes[i].color;
 
-	for (const note of scores[0].notes) {
-		notes1.push(note.note);
-	}
-
-	if (scores[1]) {
-		for (const note of scores[1].notes) {
-			notes2.push(note.note);
-		}
-	}
-
-	for (let i = 0; i < notes1.length; i++) {
-		if (notes1[i] !== "m") {
-			notes1[i] = "m";
-			notes2[i] = "m";
+		if (color === "#000000") {
+			scores[0].notes[i].color = "#88888888";
+			if (scores[1]) {
+				scores[1].notes[i].color = "#88888888";
+			}
 			break;
 		}
 	}
 
-	scores[0].addNotes(notes1);
-
-	if (scores[1]) {
-		scores[1].addNotes(notes2);
-
-		const connector = Score.createConnector(scores[0], scores[1]);
-		connector.draw();
-	}
 
 	for (let score of scores) score.draw();
+	if (scores[1]) Score.createConnector(scores[0], scores[1]).draw();
 }
-
-//========================//
-// PARTENZA DEL MICROFONO //
-//========================//
-
-//startMic();
