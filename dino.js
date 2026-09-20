@@ -111,7 +111,7 @@ class Dino extends BasicDino {
 
 		this.velX = distance / this.framePerJump;
 
-		updateScore();
+		updateScore(LEVEL);
 	}
 
 	update(id) {
