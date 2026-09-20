@@ -149,7 +149,8 @@ class Score {
 				x: i * this.noteSpacing + this.noteXoffset,
 				y: this.yStave + yNotePos.y,
 				lines: yNotePos.lines,
-				accidental: note.length === 3 ? note[1] : null 
+				accidental: note.length === 3 ? note[1] : null,
+				color: "#000000" 
 			}
 		}
 	}
@@ -295,6 +296,8 @@ class Score {
 		for (let note of this.notes) {
 			if (note.note === "m") continue;
 
+			this.ctx.fillStyle = note.color;
+			
 			const x = note.x + this.xClef;
 			const lines = note.lines;
 
