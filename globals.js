@@ -9,7 +9,7 @@ let TILE_SIZE, TILE_Y_OFFSET;
 
 let LIFE_BAR_DIM;
 	
-const TOTAL_TIME = 90000;
+const TOTAL_TIME = 10000;
 
 const setCanvasDimensions = (scale) => {
 	SCALE = scale;
@@ -44,5 +44,11 @@ const setAllCanvas = () => {
 
 	fadingCnv = createCanvas();
 	fadingCtx = setupCanvas(fadingCnv, 0, 0, WIDTH, HEIGHT, false)
-	fadingCtx.font = SCORE_FONT_SIZE + "px bold Arial";
+	fadingCtx.font = "bold " + SCORE_FONT_SIZE + "px Helvetica";
+
+	scoreCnv.addEventListener("pointerdown", () => {
+		if (gameIsRunning) {
+			dino.jump(RELATIVE_NOTE_SPACING);
+	}
+});
 }
