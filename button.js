@@ -1,5 +1,6 @@
 const BUTTON_IMAGE_WIDTH = 175;
 const BUTTON_IMAGE_HEIGHT = 175;
+
 const NORMAL_BUTTON_IMAGE_COORDS = [
 	{x: 455, y: 402},
    	{x: 651, y: 402},
@@ -7,13 +8,25 @@ const NORMAL_BUTTON_IMAGE_COORDS = [
    	{x: 1044, y: 402}
 ];
 
-const xoff = 0;
-const yoff = 3220;
 const BACK_BUTTON_IMAGE_COORDS = [
 	{x:0, y: 3622},
    	{x: 193, y: 3622},
    	{x: 386, y: 3622},
    	{x: 589, y: 3622}
+];
+
+const PLAY_BUTTON_IMAGE_COORDS = [
+    {x: 0,   y: 623},
+    {x: 193, y: 623},
+    {x: 386, y: 623},
+    {x: 589, y: 623}
+];
+
+const PAUSE_BUTTON_IMAGE_COORDS = [
+    {x: 0,   y: 1825},
+    {x: 193, y: 1825},
+    {x: 386, y: 1825},
+    {x: 589, y: 1825}
 ];
 
 class GuiButton {
@@ -88,6 +101,27 @@ class GuiButton {
 
 	addEventListener(event, fn) {
 		this.btn.addEventListener(event, fn);
+	}
+}
+
+class TwoSidesGuiButton extends GuiButton {
+	constructor(text, x, y, w, h, wrapper, imgCoords = NORMAL_BUTTON_IMAGE_COORDS, imgCoords2) {
+		super(text, x, y, w, h, wrapper, imgCoords);
+
+		this.firstImgCoords = this.imgCoords;
+		this.secondImgCoords = imgCoords2;
+
+		this.currentStatus = "running";
+	}
+
+	toggle() {
+		if (this.currentStatus === "running") {
+			this.currentStatus = "stop";
+			this.imgCoords = this.secondImgCoords;
+		} else {
+			this.currentStatus = "running";
+			this.imgCoords = this.firstImgCoords;
+		}
 	}
 }
 
