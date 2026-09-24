@@ -209,6 +209,7 @@ const setupGame = async (level) => {
 		pauseBtn.toggle();
 
 		if (pauseBtn.currentStatus === "running") {
+			frameCounter = 0;
 			mainLoop();
 		} else {
 			cancelAnimationFrame(ID);
