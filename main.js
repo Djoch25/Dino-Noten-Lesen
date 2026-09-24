@@ -64,6 +64,9 @@ let punteggioParziale = 0;
 
 let ID;
 let frameCounter = 0;
+let ignoreMic = false;
+
+let backBtn, pauseBtn;
 
 const mainLoop = () => {
 	ID = requestAnimationFrame(mainLoop);
@@ -83,9 +86,11 @@ const mainLoop = () => {
 	//update
 	if (gameOver && !dino.dead && !dino.isJumping) {
 		dino.toDeath();
+
+		GuiButton.destroy(backBtn, pauseBtn);
 	}
 
-	if (LEVEL !== 10 && currentMidiPitch === midiNoteSet[midiTargetIndex]) {
+	if (!ignoreMic && currentMidiPitch === midiNoteSet[midiTargetIndex]) {
 		dino.jump(RELATIVE_NOTE_SPACING);
 	}
 
@@ -172,6 +177,7 @@ const endgameLoop = () => {
 
 			document.body.removeChild(fadingCnv);
 			GuiButton.destroy(endBtn);
+			
 			createChoiseMenu();
 		});
 	}
@@ -187,6 +193,27 @@ const setupGame = async (level) => {
 	await document.fonts.load(SCORE_FONT_SIZE + "px Bravura");
 
 	addBackgroundToCanvas(level.tileSet, scoreCnv, TILE_SIZE);
+	
+	backBtn = new GuiButton("", WIDTH * 0.1, HEIGHT * 0.1, 100, 100, document.body, BACK_BUTTON_IMAGE_COORDS);
+	backBtn.addEventListener("click", () => {
+		cancelAnimationFrame(ID);
+		scoreCtx.clearRect(0, 0, WIDTH, HEIGHT);
+		animeCtx.clearRect(0, 0, WIDTH, HEIGHT);
+
+		GuiButton.destroy(backBtn, pauseBtn);
+		createChoiseMenu();
+	});
+
+	pauseBtn = new TwoSidesGuiButton("", WIDTH * 0.2, HEIGHT * 0.1, 100, 100, document.body, PAUSE_BUTTON_IMAGE_COORDS, PLAY_BUTTON_IMAGE_COORDS);
+	pauseBtn.addEventListener("click", (event) => {
+		pauseBtn.toggle();
+
+		if (pauseBtn.currentStatus === "running") {
+			mainLoop();
+		} else {
+			cancelAnimationFrame(ID);
+		}
+	});
 
 	setupScore(level);
 	fadingColor = level.color;
@@ -260,15 +287,6 @@ const setupScore = (level) => {
 	if (connector) connector.draw();
 }
 
-//=================//
-// SENZA MICROFONO //
-//=================//
-
-document.addEventListener("pointerdown", () => {
-	if (gameIsRunning) {
-		dino.jump(RELATIVE_NOTE_SPACING);
-	}
-});
 
 const updateScore = (level) => {
 	punteggioTotale++;
