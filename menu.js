@@ -32,6 +32,10 @@ const createChoiseMenu = () =>{
 		btns[i].addEventListener("click", () => {
 			GuiButton.destroy(...btns);
 			createLevelMenu(levels[i]);
+
+			if (i == 2) {
+				ignoreMic = true;
+			}
 		});
 	}
 }
@@ -44,6 +48,7 @@ const createLevelMenu = (levels) => {
 	frameCounter = 0;
 	midiTargetIndex = 0;
 	fadingAlpha = 0;
+	ignoreMic = false;
 
 	document.documentElement.style.backgroundColor = "#55ff55";
 	document.body.style.backgroundColor = "#55ff55";
